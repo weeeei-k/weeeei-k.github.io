@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>作品集 — 黃帷凱</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200;300;400&family=Noto+Sans+TC:wght@200;300&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --black: #0a0a0a;
+      --white: #f0ece4;
+      --grey: #7a7672;
+      --accent: #c8bfb0;
+      --font-serif: 'Noto Serif TC', serif;
+      --font-sans: 'Noto Sans TC', sans-serif;
+    }
+
+    *, *::before, *::after {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--font-sans);
+      font-weight: 200;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* Cursor */
+    .cursor {
+      position: fixed;
+      width: 8px; height: 8px;
+      background: var(--white);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s, height 0.3s, opacity 0.3s;
+    }
+    .cursor-follower {
+      position: fixed;
+      width: 32px; height: 32px;
+      border: 1px solid rgba(240,236,228,0.4);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s, height 0.3s;
+    }
+
+    /* Nav */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 2rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      mix-blend-mode: difference;
+    }
+    .nav-logo {
+      font-family: var(--font-serif);
+      font-weight: 200;
+      font-size: 0.85rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--white);
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      gap: 3rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: var(--font-sans);
+      font-weight: 200;
+      font-size: 0.75rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--white);
+      text-decoration: none;
+      opacity: 0.7;
+      position: relative;
+      transition: opacity 0.3s;
+    }
+    .nav-links a.active,
+    .nav-links a:hover { opacity: 1; }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px; left: 0;
+      width: 0; height: 1px;
+      background: var(--white);
+      transition: width 0.4s;
+    }
+    .nav-links a.active::after,
+    .nav-links a:hover::after { width: 100%; }
+
+    /* Page Header */
+    .page-header {
+      padding: 14rem 3rem 5rem;
+      opacity: 0;
+      animation: fadeUp 1s ease 0.3s forwards;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .page-title {
+      font-family: var(--font-serif);
+      font-weight: 200;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      letter-spacing: 0.05em;
+      line-height: 1.1;
+    }
+
+    .page-subtitle {
+      font-size: 0.7rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-top: 1rem;
+    }
+
+    /* Category Grid - Full Width Rows */
+    .categories {
+      padding: 0 3rem 8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5px;
+    }
+
+    .category-row {
+      position: relative;
+      width: 100%;
+      height: 60vh;
+      min-height: 400px;
+      overflow: hidden;
+      cursor: none;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.9s ease, transform 0.9s ease;
+      text-decoration: none;
+      display: block;
+    }
+
+    .category-row.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .category-row:nth-child(1) { transition-delay: 0.1s; }
+    .category-row:nth-child(2) { transition-delay: 0.25s; }
+    .category-row:nth-child(3) { transition-delay: 0.4s; }
+
+    .cat-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      transform: scale(1.06);
+      transition: transform 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      filter: brightness(0.55);
+    }
+
+    .category-row:hover .cat-image {
+      transform: scale(1);
+      filter: brightness(0.45);
+    }
+
+    .cat-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to right,
+        rgba(10,10,10,0.7) 0%,
+        rgba(10,10,10,0.1) 60%,
+        rgba(10,10,10,0) 100%
+      );
+    }
+
+    .cat-content {
+      position: absolute;
+      top: 50%;
+      left: 4rem;
+      transform: translateY(-50%);
+    }
+
+    .cat-number {
+      font-size: 0.6rem;
+      letter-spacing: 0.4em;
+      color: var(--accent);
+      display: block;
+      margin-bottom: 1rem;
+    }
+
+    .cat-name {
+      font-family: var(--font-serif);
+      font-weight: 200;
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      color: var(--white);
+      letter-spacing: 0.05em;
+      display: block;
+      line-height: 1;
+    }
+
+    .cat-name-en {
+      font-family: var(--font-sans);
+      font-weight: 200;
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent);
+      display: block;
+      margin-top: 0.75rem;
+    }
+
+    .cat-desc {
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      color: rgba(240,236,228,0.5);
+      margin-top: 1.25rem;
+      max-width: 280px;
+      line-height: 1.8;
+      opacity: 0;
+      transform: translateX(-10px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .category-row:hover .cat-desc {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .cat-cta {
+      position: absolute;
+      bottom: 3rem;
+      right: 3rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      opacity: 0;
+      transform: translateX(10px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .category-row:hover .cat-cta {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .cat-cta span {
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--white);
+    }
+
+    .cat-cta-line {
+      width: 40px;
+      height: 1px;
+      background: var(--white);
+    }
+
+    /* Progress */
+    .progress-line {
+      position: fixed;
+      top: 0; left: 0;
+      height: 1px;
+      background: rgba(200,191,176,0.6);
+      z-index: 200;
+      transition: width 0.1s linear;
+      width: 0%;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      nav { padding: 1.5rem; }
+      .nav-links { gap: 1.5rem; }
+      .page-header { padding: 10rem 1.5rem 3rem; }
+      .categories { padding: 0 0 5rem; gap: 2px; }
+      .category-row { height: 50vh; min-height: 280px; }
+      .cat-content { left: 1.5rem; }
+      .cat-cta { right: 1.5rem; bottom: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-follower" id="cursorFollower"></div>
+  <div class="progress-line" id="progressLine"></div>
+
+  <nav>
+    <a href="index.html" class="nav-logo">WKH</a>
+    <ul class="nav-links">
+      <li><a href="works.html" class="active">作品集</a></li>
+      <li><a href="about.html">關於</a></li>
+      <li><a href="contact.html">聯絡</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-header">
+    <h1 class="page-title">作品集</h1>
+    <p class="page-subtitle">Photography Portfolio &nbsp;·&nbsp; Three Categories</p>
+  </div>
+
+  <div class="categories">
+
+    <!-- 生活 -->
+    <a href="life.html" class="category-row" id="cat1">
+      <img class="cat-image" src="assets/images/fulls/02.jpg" alt="生活" />
+      <div class="cat-overlay"></div>
+      <div class="cat-content">
+        <span class="cat-number">01</span>
+        <span class="cat-name">生活</span>
+        <span class="cat-name-en">Life</span>
+        <p class="cat-desc">日常的片刻，旅途的風景，<br/>那些值得被記住的尋常。</p>
+      </div>
+      <div class="cat-cta">
+        <span>進入</span>
+        <div class="cat-cta-line"></div>
+      </div>
+    </a>
+
+    <!-- 活動紀錄 -->
+    <a href="events.html" class="category-row" id="cat2">
+      <img class="cat-image" src="assets/images/fulls/07.jpg" alt="活動紀錄" />
+      <div class="cat-overlay"></div>
+      <div class="cat-content">
+        <span class="cat-number">02</span>
+        <span class="cat-name">活動紀錄</span>
+        <span class="cat-name-en">Events</span>
+        <p class="cat-desc">婚禮、音樂會、球賽，<br/>每個重要時刻的忠實見證。</p>
+      </div>
+      <div class="cat-cta">
+        <span>進入</span>
+        <div class="cat-cta-line"></div>
+      </div>
+    </a>
+
+    <!-- 人像 -->
+    <a href="portrait.html" class="category-row" id="cat3">
+      <img class="cat-image" src="assets/images/fulls/05.jpg" alt="人像" />
+      <div class="cat-overlay"></div>
+      <div class="cat-content">
+        <span class="cat-number">03</span>
+        <span class="cat-name">人像</span>
+        <span class="cat-name-en">Portrait</span>
+        <p class="cat-desc">透過鏡頭，看見每個人<br/>獨一無二的神情與故事。</p>
+      </div>
+      <div class="cat-cta">
+        <span>進入</span>
+        <div class="cat-cta-line"></div>
+      </div>
+    </a>
+
+  </div>
+
+  <script>
+    // Cursor
+    const cursor = document.getElementById('cursor');
+    const follower = document.getElementById('cursorFollower');
+    let mouseX = 0, mouseY = 0, fx = 0, fy = 0;
+
+    document.addEventListener('mousemove', e => {
+      mouseX = e.clientX; mouseY = e.clientY;
+      cursor.style.left = mouseX + 'px';
+      cursor.style.top = mouseY + 'px';
+    });
+
+    (function animate() {
+      fx += (mouseX - fx) * 0.12;
+      fy += (mouseY - fy) * 0.12;
+      follower.style.left = fx + 'px';
+      follower.style.top = fy + 'px';
+      requestAnimationFrame(animate);
+    })();
+
+    document.querySelectorAll('a').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cursor.style.width = '16px'; cursor.style.height = '16px';
+        follower.style.width = '56px'; follower.style.height = '56px';
+      });
+      el.addEventListener('mouseleave', () => {
+        cursor.style.width = '8px'; cursor.style.height = '8px';
+        follower.style.width = '32px'; follower.style.height = '32px';
+      });
+    });
+
+    // Progress
+    window.addEventListener('scroll', () => {
+      const p = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+      document.getElementById('progressLine').style.width = (p * 100) + '%';
+    });
+
+    // Fade in
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.category-row').forEach(el => obs.observe(el));
+  </script>
+</body>
+</html>

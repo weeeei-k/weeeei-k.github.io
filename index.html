@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>黃帷凱 Wei Kai Huang</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200;300;400&family=Noto+Sans+TC:wght@200;300&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --black: #0a0a0a;
+      --white: #f0ece4;
+      --grey: #7a7672;
+      --accent: #c8bfb0;
+      --font-serif: 'Noto Serif TC', serif;
+      --font-sans: 'Noto Sans TC', sans-serif;
+    }
+
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--font-sans);
+      font-weight: 200;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* Custom Cursor */
+    .cursor {
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      background: var(--white);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s ease, width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
+    }
+
+    .cursor-follower {
+      position: fixed;
+      width: 32px;
+      height: 32px;
+      border: 1px solid rgba(240, 236, 228, 0.4);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.15s ease, width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
+    }
+
+    body:hover .cursor { opacity: 1; }
+
+    /* Navigation */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 2rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      mix-blend-mode: difference;
+    }
+
+    .nav-logo {
+      font-family: var(--font-serif);
+      font-weight: 200;
+      font-size: 0.85rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--white);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 3rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--font-sans);
+      font-weight: 200;
+      font-size: 0.75rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--white);
+      text-decoration: none;
+      position: relative;
+      opacity: 0.7;
+      transition: opacity 0.3s ease;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--white);
+      transition: width 0.4s ease;
+    }
+
+    .nav-links a:hover {
+      opacity: 1;
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    /* Hero Section */
+    .hero {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .hero-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      transform: scale(1.05);
+      animation: heroZoom 12s ease-out forwards;
+      filter: brightness(0.75);
+    }
+
+    @keyframes heroZoom {
+      from { transform: scale(1.05); }
+      to { transform: scale(1); }
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(10,10,10,0.15) 0%,
+        rgba(10,10,10,0) 40%,
+        rgba(10,10,10,0.5) 100%
+      );
+    }
+
+    .hero-content {
+      position: absolute;
+      bottom: 4rem;
+      left: 3rem;
+      opacity: 0;
+      animation: fadeUp 1.2s ease 0.8s forwards;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hero-name {
+      font-family: var(--font-serif);
+      font-weight: 200;
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      letter-spacing: 0.05em;
+      line-height: 1.1;
+      color: var(--white);
+    }
+
+    .hero-subtitle {
+      font-family: var(--font-sans);
+      font-weight: 200;
+      font-size: 0.7rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-top: 0.75rem;
+    }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 4rem;
+      right: 3rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      opacity: 0;
+      animation: fadeUp 1.2s ease 1.4s forwards;
+    }
+
+    .hero-scroll span {
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent);
+      writing-mode: vertical-rl;
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 60px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+      animation: scrollLine 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollLine {
+      0%, 100% { transform: scaleY(1); opacity: 1; }
+      50% { transform: scaleY(0.5); opacity: 0.4; }
+    }
+
+    /* Works Section */
+    .works {
+      padding: 8rem 3rem;
+      position: relative;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 2rem;
+      margin-bottom: 5rem;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .section-header.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .section-title {
+      font-family: var(--font-serif);
+      font-weight: 200;
+      font-size: clamp(1.5rem, 3vw, 2.5rem);
+      letter-spacing: 0.05em;
+      color: var(--white);
+    }
+
+    .section-line {
+      flex: 1;
+      height: 1px;
+      background: rgba(240, 236, 228, 0.15);
+      max-width: 200px;
+    }
+
+    .section-count {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      color: var(--grey);
+    }
+
+    /* Category Grid */
+    .categories {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .category-card {
+      position: relative;
+      aspect-ratio: 3/4;
+      overflow: hidden;
+      cursor: none;
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+      text-decoration: none;
+    }
+
+    .category-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .category-card:nth-child(1) { transition-delay: 0.1s; }
+    .category-card:nth-child(2) { transition-delay: 0.25s; }
+    .category-card:nth-child(3) { transition-delay: 0.4s; }
+
+    .category-bg {
+      position: absolute;
+      inset: 0;
+      background: #1a1a1a;
+      transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .category-card:hover .category-bg {
+      transform: scale(1.04);
+    }
+
+    /* Category background images */
+    .category-bg {
+      background-size: cover !important;
+      background-position: center !important;
+      transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+    }
+    .category-card:hover .category-bg {
+      transform: scale(1.04);
+    }
+
+    .category-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to top,
+        rgba(10,10,10,0.9) 0%,
+        rgba(10,10,10,0.3) 50%,
+        rgba(10,10,10,0) 100%
+      );
+      transition: background 0.5s ease;
+    }
+
+    .category-card:hover .category-overlay {
+      background: linear-gradient(
+        to top,
+        rgba(10,10,10,0.85) 0%,
+        rgba(10,10,10,0.2) 60%,
+        rgba(10,10,10,0) 100%
+      );
+    }
+
+    .category-info {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 2rem;
+      right: 2rem;
+    }
+
+    .category-number {
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      color: var(--grey);
+      margin-bottom: 0.75rem;
+      display: block;
+      transition: color 0.3s ease;
+    }
+
+    .category-card:hover .category-number {
+      color: var(--accent);
+    }
+
+    .category-name {
+      font-family: var(--font-serif);
+      font-weight: 200;
+      font-size: clamp(1.3rem, 2.5vw, 2rem);
+      color: var(--white);
+      letter-spacing: 0.05em;
+      display: block;
+    }
+
+    .category-desc {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-top: 0.5rem;
+      display: block;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .category-card:hover .category-desc {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .category-arrow {
+      position: absolute;
+      top: 2rem;
+      right: 2rem;
+      width: 40px;
+      height: 40px;
+      border: 1px solid rgba(240, 236, 228, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transform: scale(0.8) rotate(-45deg);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .category-arrow svg {
+      width: 14px;
+      height: 14px;
+      stroke: var(--white);
+      fill: none;
+      stroke-width: 1.5;
+    }
+
+    .category-card:hover .category-arrow {
+      opacity: 1;
+      transform: scale(1) rotate(0deg);
+    }
+
+    /* About Strip */
+    .about-strip {
+      margin: 0 3rem;
+      padding: 5rem 0;
+      border-top: 1px solid rgba(240, 236, 228, 0.08);
+      display: flex;
+      gap: 6rem;
+      align-items: flex-start;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .about-strip.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .about-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--grey);
+      white-space: nowrap;
+      padding-top: 0.4rem;
+    }
+
+    .about-text {
+      font-family: var(--font-serif);
+      font-weight: 200;
+      font-size: clamp(1rem, 1.8vw, 1.4rem);
+      line-height: 1.9;
+      color: rgba(240, 236, 228, 0.75);
+      letter-spacing: 0.05em;
+      max-width: 640px;
+    }
+
+    .about-text em {
+      color: var(--white);
+      font-style: normal;
+    }
+
+    /* Footer */
+    footer {
+      padding: 3rem;
+      border-top: 1px solid rgba(240, 236, 228, 0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-name {
+      font-family: var(--font-serif);
+      font-weight: 200;
+      font-size: 0.8rem;
+      letter-spacing: 0.15em;
+      color: var(--grey);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .footer-links a {
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--grey);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .footer-links a:hover {
+      color: var(--white);
+    }
+
+    /* Scroll Indicator Line (page progress) */
+    .progress-line {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 1px;
+      background: rgba(200, 191, 176, 0.6);
+      z-index: 200;
+      transition: width 0.1s linear;
+      width: 0%;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      nav {
+        padding: 1.5rem 1.5rem;
+      }
+
+      .nav-links {
+        gap: 1.5rem;
+      }
+
+      .hero-content {
+        left: 1.5rem;
+        bottom: 3rem;
+      }
+
+      .hero-scroll {
+        right: 1.5rem;
+        bottom: 3rem;
+      }
+
+      .works {
+        padding: 5rem 1.5rem;
+      }
+
+      .categories {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .category-card {
+        aspect-ratio: 4/3;
+      }
+
+      .about-strip {
+        margin: 0 1.5rem;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      footer {
+        padding: 2rem 1.5rem;
+        flex-direction: column;
+        gap: 1.5rem;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Custom Cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-follower" id="cursorFollower"></div>
+
+  <!-- Progress Line -->
+  <div class="progress-line" id="progressLine"></div>
+
+  <!-- Navigation -->
+  <nav>
+    <a href="/" class="nav-logo">WKH</a>
+    <ul class="nav-links">
+      <li><a href="/works">作品集</a></li>
+      <li><a href="/about">關於</a></li>
+      <li><a href="/contact">聯絡</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <img
+      class="hero-image"
+      src="assets/images/fulls/01.jpg"
+      alt="合歡山迷霧"
+    />
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1 class="hero-name">黃帷凱</h1>
+      <p class="hero-subtitle">Photography &nbsp;／&nbsp; Wei Kai Huang</p>
+    </div>
+    <div class="hero-scroll">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- Works -->
+  <section class="works">
+    <div class="section-header" id="worksHeader">
+      <h2 class="section-title">作品集</h2>
+      <div class="section-line"></div>
+      <span class="section-count">03 categories</span>
+    </div>
+
+    <div class="categories">
+      <a href="/life" class="category-card" id="cat1">
+        <div class="category-bg"></div>
+        <div class="category-overlay"></div>
+        <div class="category-arrow">
+          <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </div>
+        <div class="category-info">
+          <span class="category-number">01</span>
+          <span class="category-name">生活</span>
+          <span class="category-desc">Life &nbsp;·&nbsp; Daily Records</span>
+        </div>
+      </a>
+
+      <a href="/events" class="category-card" id="cat2">
+        <div class="category-bg"></div>
+        <div class="category-overlay"></div>
+        <div class="category-arrow">
+          <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </div>
+        <div class="category-info">
+          <span class="category-number">02</span>
+          <span class="category-name">活動紀錄</span>
+          <span class="category-desc">Events &nbsp;·&nbsp; Ceremonies</span>
+        </div>
+      </a>
+
+      <a href="/portrait" class="category-card" id="cat3">
+        <div class="category-bg"></div>
+        <div class="category-overlay"></div>
+        <div class="category-arrow">
+          <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </div>
+        <div class="category-info">
+          <span class="category-number">03</span>
+          <span class="category-name">人像</span>
+          <span class="category-desc">Portrait &nbsp;·&nbsp; People</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- About Strip -->
+  <div class="about-strip" id="aboutStrip">
+    <span class="about-label">關於我</span>
+    <p class="about-text">
+      攝影對我而言，是一種<em>記錄的本能</em>。<br />
+      在快門的瞬間，時間被凝住——無論是山間迷霧、婚禮的眼淚，或是某個尋常的午後。<br /><br />
+      我相信，最好的照片不是最美的照片，而是最<em>真實</em>的那一張。
+    </p>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <span class="footer-name">© 2025 黃帷凱 Wei Kai Huang</span>
+    <div class="footer-links">
+      <a href="https://www.instagram.com/weeeei_k" target="_blank">Instagram</a>
+      <a href="/contact">Contact</a>
+    </div>
+  </footer>
+
+  <script>
+    // Custom Cursor
+    const cursor = document.getElementById('cursor');
+    const follower = document.getElementById('cursorFollower');
+    let mouseX = 0, mouseY = 0;
+    let followerX = 0, followerY = 0;
+
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      cursor.style.left = mouseX + 'px';
+      cursor.style.top = mouseY + 'px';
+    });
+
+    function animateFollower() {
+      followerX += (mouseX - followerX) * 0.12;
+      followerY += (mouseY - followerY) * 0.12;
+      follower.style.left = followerX + 'px';
+      follower.style.top = followerY + 'px';
+      requestAnimationFrame(animateFollower);
+    }
+    animateFollower();
+
+    // Hover effects on links
+    const hoverEls = document.querySelectorAll('a, button');
+    hoverEls.forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cursor.style.width = '16px';
+        cursor.style.height = '16px';
+        cursor.style.opacity = '0.5';
+        follower.style.width = '56px';
+        follower.style.height = '56px';
+      });
+      el.addEventListener('mouseleave', () => {
+        cursor.style.width = '8px';
+        cursor.style.height = '8px';
+        cursor.style.opacity = '1';
+        follower.style.width = '32px';
+        follower.style.height = '32px';
+      });
+    });
+
+    // Scroll Progress
+    const progressLine = document.getElementById('progressLine');
+    window.addEventListener('scroll', () => {
+      const scrolled = window.scrollY;
+      const total = document.body.scrollHeight - window.innerHeight;
+      progressLine.style.width = (scrolled / total * 100) + '%';
+    });
+
+    // Intersection Observer for fade-in
+    const observerOptions = { threshold: 0.15 };
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.section-header, .category-card, .about-strip').forEach(el => {
+      observer.observe(el);
+    });
+  </script>
+</body>
+</html>
