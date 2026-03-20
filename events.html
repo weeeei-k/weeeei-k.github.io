@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>活動紀錄 — 黃帷凱</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200;300;400&family=Noto+Sans+TC:wght@200;300&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --black: #0a0a0a;
+      --white: #f0ece4;
+      --grey: #7a7672;
+      --accent: #c8bfb0;
+      --font-serif: 'Noto Serif TC', serif;
+      --font-sans: 'Noto Sans TC', sans-serif;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--font-sans);
+      font-weight: 200;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* Cursor */
+    .cursor {
+      position: fixed;
+      width: 8px; height: 8px;
+      background: var(--white);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s, height 0.3s;
+    }
+    .cursor-follower {
+      position: fixed;
+      width: 32px; height: 32px;
+      border: 1px solid rgba(240,236,228,0.4);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s, height 0.3s;
+    }
+
+    /* Nav */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 2rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      mix-blend-mode: difference;
+    }
+    .nav-logo {
+      font-family: var(--font-serif);
+      font-weight: 200;
+      font-size: 0.85rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--white);
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      gap: 3rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: var(--font-sans);
+      font-weight: 200;
+      font-size: 0.75rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--white);
+      text-decoration: none;
+      opacity: 0.7;
+      position: relative;
+      transition: opacity 0.3s;
+    }
+    .nav-links a:hover { opacity: 1; }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px; left: 0;
+      width: 0; height: 1px;
+      background: var(--white);
+      transition: width 0.4s;
+    }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* Back link */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--grey);
+      text-decoration: none;
+      margin: 8rem 3rem 0;
+      transition: color 0.3s;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.2s forwards;
+    }
+    .back-link:hover { color: var(--white); }
+    .back-link::before {
+      content: '←';
+      font-size: 0.8rem;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Page Header */
+    .page-header {
+      padding: 2rem 3rem 4rem;
+      opacity: 0;
+      animation: fadeUp 0.9s ease 0.4s forwards;
+    }
+
+    .page-title {
+      font-family: var(--font-serif);
+      font-weight: 200;
+      font-size: clamp(3rem, 6vw, 5rem);
+      letter-spacing: 0.05em;
+      line-height: 1;
+    }
+
+    .page-meta {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      margin-top: 1.5rem;
+    }
+
+    .page-subtitle {
+      font-size: 0.65rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--grey);
+    }
+
+    .page-divider {
+      flex: 1;
+      max-width: 120px;
+      height: 1px;
+      background: rgba(240,236,228,0.15);
+    }
+
+    /* =============================================
+       照片 GRID — 在這裡新增或移除照片
+       每個 .photo-item 就是一張照片
+       src 改成你的檔案路徑
+       data-caption 是滑鼠移過去顯示的文字（可留空）
+       ============================================= */
+    .photo-grid {
+      padding: 0 3rem 8rem;
+      columns: 3;
+      column-gap: 6px;
+    }
+
+    .photo-item {
+      break-inside: avoid;
+      margin-bottom: 6px;
+      position: relative;
+      overflow: hidden;
+      cursor: none;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .photo-item.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .photo-item img {
+      width: 100%;
+      display: block;
+      transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.5s ease;
+      filter: brightness(0.92);
+    }
+
+    .photo-item:hover img {
+      transform: scale(1.03);
+      filter: brightness(0.75);
+    }
+
+    .photo-caption {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 2rem 1.25rem 1.25rem;
+      background: linear-gradient(to top, rgba(10,10,10,0.8), transparent);
+      font-family: var(--font-serif);
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      color: var(--white);
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .photo-item:hover .photo-caption {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Lightbox */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(10,10,10,0.95);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.4s ease, visibility 0.4s;
+      cursor: none;
+    }
+
+    .lightbox.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .lightbox img {
+      max-width: 90vw;
+      max-height: 90vh;
+      object-fit: contain;
+      transform: scale(0.95);
+      transition: transform 0.4s ease;
+    }
+
+    .lightbox.active img {
+      transform: scale(1);
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 2rem; right: 2rem;
+      width: 44px; height: 44px;
+      border: 1px solid rgba(240,236,228,0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: none;
+      transition: border-color 0.3s;
+    }
+
+    .lightbox-close:hover {
+      border-color: var(--white);
+    }
+
+    .lightbox-close svg {
+      width: 16px; height: 16px;
+      stroke: var(--white);
+      fill: none;
+      stroke-width: 1.5;
+    }
+
+    .lightbox-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 48px; height: 48px;
+      border: 1px solid rgba(240,236,228,0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: none;
+      transition: border-color 0.3s;
+    }
+
+    .lightbox-nav:hover { border-color: var(--white); }
+    .lightbox-nav svg { width: 16px; height: 16px; stroke: var(--white); fill: none; stroke-width: 1.5; }
+    .lightbox-prev { left: 2rem; }
+    .lightbox-next { right: 2rem; }
+
+    .lightbox-counter {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      color: var(--grey);
+    }
+
+    /* Progress */
+    .progress-line {
+      position: fixed;
+      top: 0; left: 0;
+      height: 1px;
+      background: rgba(200,191,176,0.6);
+      z-index: 200;
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      nav { padding: 1.5rem; }
+      .back-link { margin: 6rem 1.5rem 0; }
+      .page-header { padding: 1.5rem 1.5rem 3rem; }
+      .photo-grid { padding: 0 1.5rem 5rem; columns: 2; }
+    }
+
+    @media (max-width: 480px) {
+      .photo-grid { columns: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-follower" id="cursorFollower"></div>
+  <div class="progress-line" id="progressLine"></div>
+
+  <nav>
+    <a href="index.html" class="nav-logo">WKH</a>
+    <ul class="nav-links">
+      <li><a href="works.html">作品集</a></li>
+      <li><a href="about.html">關於</a></li>
+      <li><a href="contact.html">聯絡</a></li>
+    </ul>
+  </nav>
+
+  <a href="works.html" class="back-link">返回作品集</a>
+
+  <div class="page-header">
+    <h1 class="page-title">活動紀錄</h1>
+    <div class="page-meta">
+      <span class="page-subtitle">Life &nbsp;·&nbsp; Daily Records</span>
+      <div class="page-divider"></div>
+    </div>
+  </div>
+
+  <!-- =============================================
+       在這裡新增照片
+       複製一個 <div class="photo-item"> 區塊
+       把 src 改成你的照片路徑
+       data-caption 填照片說明（可以留空 ""）
+       ============================================= -->
+  <div class="photo-grid" id="photoGrid">
+
+    <div class="photo-item" data-caption="婚禮">
+      <img src="assets/images/fulls/07.jpg" alt="婚禮" loading="lazy" />
+      <div class="photo-caption">婚禮</div>
+    </div>
+
+    <!-- 在這裡貼更多照片，格式如下：
+    <div class="photo-item" data-caption="照片說明">
+      <img src="assets/images/fulls/你的檔名.jpg" alt="說明" loading="lazy" />
+      <div class="photo-caption">照片說明</div>
+    </div>
+    -->
+
+  </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox-close" id="lightboxClose">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </div>
+    <div class="lightbox-nav lightbox-prev" id="lightboxPrev">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </div>
+    <img id="lightboxImg" src="" alt="" />
+    <div class="lightbox-nav lightbox-next" id="lightboxNext">
+      <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+    <div class="lightbox-counter" id="lightboxCounter"></div>
+  </div>
+
+  <script>
+    // Cursor
+    const cursor = document.getElementById('cursor');
+    const follower = document.getElementById('cursorFollower');
+    let mx = 0, my = 0, fx = 0, fy = 0;
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+    });
+    (function anim() {
+      fx += (mx - fx) * 0.12; fy += (my - fy) * 0.12;
+      follower.style.left = fx + 'px'; follower.style.top = fy + 'px';
+      requestAnimationFrame(anim);
+    })();
+    document.querySelectorAll('a, .lightbox-close, .lightbox-nav, .photo-item').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cursor.style.width = '16px'; cursor.style.height = '16px';
+        follower.style.width = '56px'; follower.style.height = '56px';
+      });
+      el.addEventListener('mouseleave', () => {
+        cursor.style.width = '8px'; cursor.style.height = '8px';
+        follower.style.width = '32px'; follower.style.height = '32px';
+      });
+    });
+
+    // Progress
+    window.addEventListener('scroll', () => {
+      const p = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+      document.getElementById('progressLine').style.width = (p * 100) + '%';
+    });
+
+    // Fade in
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          setTimeout(() => e.target.classList.add('visible'), i * 80);
+        }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.photo-item').forEach(el => obs.observe(el));
+
+    // Lightbox
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+    const lightboxCounter = document.getElementById('lightboxCounter');
+    const photos = Array.from(document.querySelectorAll('.photo-item img'));
+    let current = 0;
+
+    function openLightbox(index) {
+      current = index;
+      lightboxImg.src = photos[current].src;
+      lightboxCounter.textContent = (current + 1) + ' / ' + photos.length;
+      lightbox.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    photos.forEach((img, i) => {
+      img.parentElement.addEventListener('click', () => openLightbox(i));
+    });
+
+    document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+    document.getElementById('lightboxPrev').addEventListener('click', () => {
+      current = (current - 1 + photos.length) % photos.length;
+      lightboxImg.src = photos[current].src;
+      lightboxCounter.textContent = (current + 1) + ' / ' + photos.length;
+    });
+    document.getElementById('lightboxNext').addEventListener('click', () => {
+      current = (current + 1) % photos.length;
+      lightboxImg.src = photos[current].src;
+      lightboxCounter.textContent = (current + 1) + ' / ' + photos.length;
+    });
+
+    lightbox.addEventListener('click', e => {
+      if (e.target === lightbox) closeLightbox();
+    });
+
+    document.addEventListener('keydown', e => {
+      if (!lightbox.classList.contains('active')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') document.getElementById('lightboxPrev').click();
+      if (e.key === 'ArrowRight') document.getElementById('lightboxNext').click();
+    });
+  </script>
+</body>
+</html>
