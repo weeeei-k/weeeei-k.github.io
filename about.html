@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>關於 — 黃帷凱</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200;300;400&family=Noto+Sans+TC:wght@200;300&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --black: #0a0a0a;
+      --white: #f0ece4;
+      --grey: #7a7672;
+      --accent: #c8bfb0;
+      --font-serif: 'Noto Serif TC', serif;
+      --font-sans: 'Noto Sans TC', sans-serif;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--font-sans);
+      font-weight: 200;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    .cursor {
+      position: fixed;
+      width: 8px; height: 8px;
+      background: var(--white);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s, height 0.3s;
+    }
+    .cursor-follower {
+      position: fixed;
+      width: 32px; height: 32px;
+      border: 1px solid rgba(240,236,228,0.4);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s, height 0.3s;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 2rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      mix-blend-mode: difference;
+    }
+    .nav-logo {
+      font-family: var(--font-serif);
+      font-weight: 200;
+      font-size: 0.85rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--white);
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      gap: 3rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: var(--font-sans);
+      font-weight: 200;
+      font-size: 0.75rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--white);
+      text-decoration: none;
+      opacity: 0.7;
+      position: relative;
+      transition: opacity 0.3s;
+    }
+    .nav-links a.active,
+    .nav-links a:hover { opacity: 1; }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px; left: 0;
+      width: 0; height: 1px;
+      background: var(--white);
+      transition: width 0.4s;
+    }
+    .nav-links a.active::after,
+    .nav-links a:hover::after { width: 100%; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Hero — 全螢幕照片 */
+    .about-hero {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .about-hero-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 30%;
+      filter: brightness(0.5);
+      transform: scale(1.04);
+      animation: heroZoom 10s ease-out forwards;
+    }
+
+    @keyframes heroZoom {
+      from { transform: scale(1.04); }
+      to { transform: scale(1); }
+    }
+
+    .about-hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(10,10,10,0.2) 0%,
+        rgba(10,10,10,0) 40%,
+        rgba(10,10,10,0.8) 100%
+      );
+    }
+
+    .about-hero-text {
+      position: absolute;
+      bottom: 5rem;
+      left: 3rem;
+      right: 3rem;
+      opacity: 0;
+      animation: fadeUp 1.2s ease 0.8s forwards;
+    }
+
+    /* =============================================
+       關於我的大引言
+       想改這段文字就直接改這裡
+       ============================================= */
+    .hero-quote {
+      font-family: var(--font-serif);
+      font-weight: 200;
+      font-size: clamp(1.5rem, 3.5vw, 2.8rem);
+      line-height: 1.6;
+      letter-spacing: 0.05em;
+      color: var(--white);
+      max-width: 700px;
+    }
+
+    .hero-quote em {
+      font-style: normal;
+      color: var(--accent);
+    }
+
+    /* Content Section */
+    .about-content {
+      padding: 8rem 3rem;
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 8rem;
+      align-items: start;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+
+    .about-content.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .about-left {
+      position: sticky;
+      top: 8rem;
+    }
+
+    .about-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--grey);
+      display: block;
+      margin-bottom: 2rem;
+    }
+
+    .about-name {
+      font-family: var(--font-serif);
+      font-weight: 200;
+      font-size: clamp(1.8rem, 3vw, 2.5rem);
+      letter-spacing: 0.05em;
+      line-height: 1.2;
+    }
+
+    .about-name-en {
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--grey);
+      display: block;
+      margin-top: 0.75rem;
+    }
+
+    .about-divider {
+      width: 40px;
+      height: 1px;
+      background: rgba(240,236,228,0.2);
+      margin: 2rem 0;
+    }
+
+    .about-ig {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      color: var(--grey);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .about-ig:hover { color: var(--white); }
+
+    /* =============================================
+       關於我的正文
+       想增加或修改段落就改這裡
+       ============================================= */
+    .about-right {
+      padding-top: 0.5rem;
+    }
+
+    .about-paragraph {
+      font-family: var(--font-serif);
+      font-weight: 200;
+      font-size: clamp(1rem, 1.5vw, 1.2rem);
+      line-height: 2;
+      letter-spacing: 0.05em;
+      color: rgba(240,236,228,0.75);
+      margin-bottom: 2.5rem;
+    }
+
+    .about-paragraph em {
+      color: var(--white);
+      font-style: normal;
+    }
+
+    .about-paragraph:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Stats Row */
+    .about-stats {
+      margin: 0 3rem;
+      padding: 4rem 0;
+      border-top: 1px solid rgba(240,236,228,0.08);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .about-stats.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-family: var(--font-serif);
+      font-weight: 200;
+      font-size: clamp(2rem, 4vw, 3rem);
+      color: var(--white);
+      display: block;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-label {
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--grey);
+      display: block;
+      margin-top: 0.5rem;
+    }
+
+    /* CTA */
+    .about-cta {
+      padding: 5rem 3rem 8rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .about-cta.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .cta-text {
+      font-family: var(--font-serif);
+      font-weight: 200;
+      font-size: clamp(1.2rem, 2.5vw, 2rem);
+      color: rgba(240,236,228,0.6);
+      margin-bottom: 2rem;
+      letter-spacing: 0.05em;
+    }
+
+    .cta-text em {
+      color: var(--white);
+      font-style: normal;
+    }
+
+    .cta-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--white);
+      text-decoration: none;
+      border: 1px solid rgba(240,236,228,0.3);
+      padding: 1rem 2rem;
+      transition: border-color 0.3s, background 0.3s;
+    }
+
+    .cta-button:hover {
+      border-color: var(--white);
+      background: rgba(240,236,228,0.05);
+    }
+
+    .cta-button-line {
+      width: 30px;
+      height: 1px;
+      background: var(--white);
+      transition: width 0.3s;
+    }
+
+    .cta-button:hover .cta-button-line {
+      width: 50px;
+    }
+
+    /* Footer */
+    footer {
+      padding: 3rem;
+      border-top: 1px solid rgba(240,236,228,0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .footer-name {
+      font-family: var(--font-serif);
+      font-weight: 200;
+      font-size: 0.8rem;
+      letter-spacing: 0.15em;
+      color: var(--grey);
+    }
+    .footer-links { display: flex; gap: 2rem; }
+    .footer-links a {
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--grey);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .footer-links a:hover { color: var(--white); }
+
+    .progress-line {
+      position: fixed;
+      top: 0; left: 0;
+      height: 1px;
+      background: rgba(200,191,176,0.6);
+      z-index: 200;
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+
+    @media (max-width: 768px) {
+      nav { padding: 1.5rem; }
+      .about-hero-text { left: 1.5rem; right: 1.5rem; bottom: 3rem; }
+      .about-content { padding: 5rem 1.5rem; grid-template-columns: 1fr; gap: 3rem; }
+      .about-left { position: static; }
+      .about-stats { margin: 0 1.5rem; grid-template-columns: repeat(3,1fr); }
+      .about-cta { padding: 3rem 1.5rem 5rem; }
+      footer { padding: 2rem 1.5rem; flex-direction: column; gap: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-follower" id="cursorFollower"></div>
+  <div class="progress-line" id="progressLine"></div>
+
+  <nav>
+    <a href="index.html" class="nav-logo">WKH</a>
+    <ul class="nav-links">
+      <li><a href="works.html">作品集</a></li>
+      <li><a href="about.html" class="active">關於</a></li>
+      <li><a href="contact.html">聯絡</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero 全螢幕 -->
+  <section class="about-hero">
+    <img class="about-hero-img" src="assets/images/fulls/17.jpg" alt="黃帷凱" />
+    <div class="about-hero-overlay"></div>
+    <div class="about-hero-text">
+      <!-- =============================================
+           大引言 — 想改就改這段
+           ============================================= -->
+      <p class="hero-quote">
+        我享受按下快門的當下，<br/>
+        彷彿什麼都可以<em>掌握</em>。
+      </p>
+    </div>
+  </section>
+
+  <!-- 主要內容 -->
+  <div class="about-content" id="aboutContent">
+    <div class="about-left">
+      <span class="about-label">攝影師</span>
+      <h1 class="about-name">黃帷凱</h1>
+      <span class="about-name-en">Wei Kai Huang</span>
+      <div class="about-divider"></div>
+      <a href="https://www.instagram.com/weeeei_k" target="_blank" class="about-ig">
+        ↗ Instagram @weeeei_k
+      </a>
+    </div>
+
+    <div class="about-right">
+      <!-- =============================================
+           關於我的段落 — 想增減就在這裡改
+           ============================================= -->
+      <p class="about-paragraph">
+        攝影對我而言，是一種<em>記錄的本能</em>。在快門的瞬間，時間被凝住——無論是山間迷霧、婚禮的眼淚，或是某個尋常的午後。
+      </p>
+      <p class="about-paragraph">
+        我相信，最好的照片不一定是最美的照片，而是最<em>真實</em>的那一張。
+      </p>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="about-cta" id="aboutCta">
+    <p class="cta-text">有合作想法？<em>歡迎聯絡我。</em></p>
+    <a href="contact.html" class="cta-button">
+      聯絡我
+      <div class="cta-button-line"></div>
+    </a>
+  </div>
+
+  <footer>
+    <span class="footer-name">© 2025 黃帷凱 Wei Kai Huang</span>
+    <div class="footer-links">
+      <a href="https://www.instagram.com/weeeei_k" target="_blank">Instagram</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </footer>
+
+  <script>
+    const cursor = document.getElementById('cursor');
+    const follower = document.getElementById('cursorFollower');
+    let mx = 0, my = 0, fx = 0, fy = 0;
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+    });
+    (function anim() {
+      fx += (mx - fx) * 0.12; fy += (my - fy) * 0.12;
+      follower.style.left = fx + 'px'; follower.style.top = fy + 'px';
+      requestAnimationFrame(anim);
+    })();
+    document.querySelectorAll('a').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cursor.style.width = '16px'; cursor.style.height = '16px';
+        follower.style.width = '56px'; follower.style.height = '56px';
+      });
+      el.addEventListener('mouseleave', () => {
+        cursor.style.width = '8px'; cursor.style.height = '8px';
+        follower.style.width = '32px'; follower.style.height = '32px';
+      });
+    });
+
+    window.addEventListener('scroll', () => {
+      const p = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+      document.getElementById('progressLine').style.width = (p * 100) + '%';
+    });
+
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.about-content, .about-stats, .about-cta').forEach(el => obs.observe(el));
+  </script>
+</body>
+</html>
