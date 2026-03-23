@@ -69,7 +69,7 @@
     <h1 class="page-title">生活</h1>
     <div class="page-meta">
       <span class="page-subtitle">Life &nbsp;·&nbsp; Daily Records</span>
-      <span class="page-count">12 works</span>
+      <span class="page-count" id="photoCount"></span>
     </div>
   </div>
 
@@ -109,6 +109,7 @@
     });
     window.addEventListener('scroll',()=>{document.getElementById('progressLine').style.width=(window.scrollY/(document.body.scrollHeight-window.innerHeight)*100)+'%';});
     const obs=new IntersectionObserver(entries=>{entries.forEach((e,i)=>{if(e.isIntersecting)setTimeout(()=>e.target.classList.add('visible'),i*60);});},{threshold:.1});
+    document.getElementById('photoCount').textContent = document.querySelectorAll('.photo-item').length + ' works';
     document.querySelectorAll('.photo-item').forEach(el=>obs.observe(el));
     const lightbox=document.getElementById('lightbox'),lightboxImg=document.getElementById('lightboxImg'),lightboxCounter=document.getElementById('lightboxCounter');
     const photos=Array.from(document.querySelectorAll('.photo-item img'));
